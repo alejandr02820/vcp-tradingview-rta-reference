@@ -1,0 +1,7 @@
+{
+  "anchor_type": "local",
+  "anchor_id": "45c9aabb16a1ce0c",
+  "merkle_root": "3cbd418eda58957a01cc8d758c94974eb75ea1864bf33d9fb242880234540dbf",
+  "timestamp": "2026-01-17T13:00:44.413196+00:00",
+  "note": "Local anchoring for reference implementation. Production should use OpenTimestamps or Bitcoin."
+}

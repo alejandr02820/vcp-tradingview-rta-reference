@@ -1,0 +1,18 @@
+Loaded 40 events from evidence/01_trade_logs/vcp_tv_events.jsonl
+======================================================================
+VCP v1.1 Verification Report
+======================================================================
+
+[Verification Results]
+  Overall Status: [PASS] VALID
+  Total Events: 40
+  Valid Events: 40
+  Invalid Events: 0
+
+[Chain Integrity]
+  Sequence Continuity: [PASS]
+  PrevHash Integrity: [PASS]
+  Merkle Root: [PASS]
+======================================================================
+Verification complete: All checks passed
+======================================================================

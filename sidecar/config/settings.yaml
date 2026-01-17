@@ -1,0 +1,132 @@
+# ============================================================================
+# VCP Sidecar Configuration
+# VeritasChain Protocol v1.1 Silver Tier
+# ============================================================================
+
+# VCP Protocol Settings
+vcp:
+  # Compliance tier: SILVER, GOLD, or PLATINUM
+  tier: "SILVER"
+  
+  # Protocol version
+  version: "1.1"
+  
+  # Policy identifier (required in v1.1)
+  # Format: urn:vso:policy:<domain>:<version>
+  policy_id: "urn:vso:policy:tv-retail:v1"
+  
+  # Hash algorithm for events
+  hash_algo: "sha256"
+  
+  # Signature algorithm
+  sign_algo: "ed25519"
+
+# Server Settings
+server:
+  # Bind address
+  host: "0.0.0.0"
+  
+  # Port number
+  port: 8080
+  
+  # Webhook secret for validation (set via environment variable in production)
+  # Generate with: openssl rand -hex 32
+  webhook_secret: ""
+  
+  # Enable CORS (for development)
+  cors_enabled: true
+  
+  # Request timeout (seconds)
+  timeout: 30
+
+# External Anchoring Settings
+anchor:
+  # Provider: opentimestamps, bitcoin, tsa, or local
+  provider: "opentimestamps"
+  
+  # Anchoring interval in hours
+  # VCP v1.1 Requirements:
+  #   - Silver: 24 hours (daily)
+  #   - Gold: 1 hour
+  #   - Platinum: 10 minutes (0.167 hours)
+  interval_hours: 24
+  
+  # Bitcoin-specific settings (if provider: bitcoin)
+  bitcoin:
+    rpc_url: ""  # Set via BITCOIN_RPC_URL env var
+    wallet_name: ""
+    network: "mainnet"
+  
+  # TSA-specific settings (if provider: tsa)
+  tsa:
+    url: "http://timestamp.digicert.com"
+    timeout: 30
+
+# Key Management
+keys:
+  # Ed25519 key pair paths
+  private_key_path: "./keys/ed25519_private.pem"
+  public_key_path: "./keys/ed25519_public.pem"
+  
+  # Key rotation settings (future feature)
+  rotation:
+    enabled: false
+    interval_days: 90
+
+# Storage Settings
+storage:
+  # Event storage path
+  events_path: "./data/events"
+  
+  # Anchor records path
+  anchors_path: "./data/anchors"
+  
+  # Maximum events before force-anchor
+  max_pending_events: 10000
+  
+  # Event retention (days, 0 = forever)
+  retention_days: 365
+
+# Logging Settings
+logging:
+  # Log level: DEBUG, INFO, WARNING, ERROR
+  level: "INFO"
+  
+  # Log format
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  
+  # Log file (optional, stdout if not set)
+  file: ""
+
+# TradingView Integration
+tradingview:
+  # Allowed system IDs (empty = allow all)
+  allowed_system_ids: []
+  
+  # Allowed account IDs (empty = allow all)
+  allowed_account_ids: []
+  
+  # IP whitelist (empty = allow all)
+  ip_whitelist: []
+
+# Health Check Settings
+health:
+  # Enable health endpoint
+  enabled: true
+  
+  # Health check interval (seconds)
+  interval: 60
+  
+  # Disk space warning threshold (MB)
+  disk_warning_mb: 1000
+
+# Development Settings
+development:
+  # Enable debug mode
+  debug: false
+  
+  # Enable hot reload
+  reload: true
+  
+  # Mock mode (no real anchoring)
+  mock_mode: false

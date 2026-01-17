@@ -1,0 +1,94 @@
+# ============================================================================
+# VCP TradingView Sidecar - Docker Compose
+# VeritasChain Protocol v1.1
+# ============================================================================
+#
+# Usage:
+#   docker-compose up -d        # Start services
+#   docker-compose logs -f      # View logs
+#   docker-compose down         # Stop services
+#
+# ============================================================================
+
+version: '3.8'
+
+services:
+  # VCP Sidecar Application
+  vcp-sidecar:
+    build:
+      context: ..
+      dockerfile: examples/Dockerfile
+    container_name: vcp-tradingview-sidecar
+    ports:
+      - "8080:8080"
+    environment:
+      - VCP_TIER=SILVER
+      - VCP_VERSION=1.1
+      - VCP_POLICY_ID=urn:vso:policy:tv-retail:v1
+      - ANCHOR_PROVIDER=opentimestamps
+      - ANCHOR_INTERVAL_HOURS=24
+    volumes:
+      # Persistent storage for events and anchors
+      - vcp-data:/app/data
+      # Key storage (generate keys first!)
+      - vcp-keys:/app/keys
+      # Configuration
+      - ./config:/app/config:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - vcp-network
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Optional: Nginx reverse proxy for HTTPS
+  nginx:
+    image: nginx:alpine
+    container_name: vcp-nginx
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - vcp-sidecar
+    restart: unless-stopped
+    networks:
+      - vcp-network
+    profiles:
+      - production
+
+  # Optional: Redis for high-performance event caching
+  redis:
+    image: redis:7-alpine
+    container_name: vcp-redis
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+    networks:
+      - vcp-network
+    profiles:
+      - production
+
+# Named volumes for persistence
+volumes:
+  vcp-data:
+    driver: local
+  vcp-keys:
+    driver: local
+  redis-data:
+    driver: local
+
+# Network configuration
+networks:
+  vcp-network:
+    driver: bridge

@@ -1,0 +1,313 @@
+// ============================================================================
+// VCP Silver Tier Strategy for TradingView
+// VeritasChain Protocol v1.1 Compliant
+// 
+// Copyright (c) 2025 VeritasChain Standards Organization
+// License: MIT
+// ============================================================================
+// 
+// This Pine Script strategy captures trading events and sends them via webhook
+// to a VCP Sidecar for cryptographic audit trail generation.
+// 
+// Requirements:
+//   - TradingView Pro/Pro+ or Premium (for webhook alerts)
+//   - VCP Sidecar running at your webhook endpoint
+// 
+// Compliance: VCP v1.1 Silver Tier
+//   - Clock Sync: Best-effort (TradingView server time)
+//   - Serialization: JSON
+//   - Signature: Delegated to Sidecar (Ed25519)
+//   - External Anchor: REQUIRED (24 hours)
+// ============================================================================
+
+//@version=5
+strategy("VCP Silver Tier Strategy", 
+         overlay=true, 
+         default_qty_type=strategy.percent_of_equity,
+         default_qty_value=100,
+         initial_capital=10000,
+         commission_type=strategy.commission.percent,
+         commission_value=0.1)
+
+// ============================================================================
+// STRATEGY PARAMETERS
+// ============================================================================
+
+// Trend Following Parameters
+fastLength = input.int(12, "Fast MA Length", minval=1)
+slowLength = input.int(26, "Slow MA Length", minval=1)
+signalLength = input.int(9, "Signal Length", minval=1)
+
+// Risk Management
+stopLossPct = input.float(2.0, "Stop Loss %", minval=0.1, step=0.1)
+takeProfitPct = input.float(4.0, "Take Profit %", minval=0.1, step=0.1)
+
+// VCP Configuration
+vcpEnabled = input.bool(true, "Enable VCP Logging", group="VCP Settings")
+vcpSystemId = input.string("TV-STRATEGY-001", "System ID", group="VCP Settings")
+vcpAccountId = input.string("DEMO-ACCOUNT", "Account ID", group="VCP Settings")
+
+// ============================================================================
+// STRATEGY LOGIC (Simple MACD-based strategy for demonstration)
+// ============================================================================
+
+// Calculate MACD
+[macdLine, signalLine, histLine] = ta.macd(close, fastLength, slowLength, signalLength)
+
+// Entry Conditions
+longCondition = ta.crossover(macdLine, signalLine) and macdLine < 0
+shortCondition = ta.crossunder(macdLine, signalLine) and macdLine > 0
+
+// Exit Conditions
+longExit = ta.crossunder(macdLine, signalLine)
+shortExit = ta.crossover(macdLine, signalLine)
+
+// ============================================================================
+// VCP EVENT FUNCTIONS
+// ============================================================================
+
+// Generate UUID v7-like identifier (approximation using timestamp)
+// Note: True UUID v7 requires millisecond precision which Pine Script provides
+vcpEventId() =>
+    str.format("{0}-{1}-7{2}-{3}-{4}", 
+        str.tostring(year), 
+        str.tostring(month * 100 + dayofmonth),
+        str.tostring(hour * 100 + minute),
+        str.tostring(second),
+        str.tostring(timenow % 100000))
+
+// Get current timestamp in ISO 8601 format
+vcpTimestamp() =>
+    str.format("{0}-{1}-{2}T{3}:{4}:{5}.{6}Z",
+        str.tostring(year),
+        str.format("{0,number,00}", month),
+        str.format("{0,number,00}", dayofmonth),
+        str.format("{0,number,00}", hour),
+        str.format("{0,number,00}", minute),
+        str.format("{0,number,00}", second),
+        str.tostring(timenow % 1000))
+
+// ============================================================================
+// VCP WEBHOOK PAYLOAD GENERATOR
+// ============================================================================
+
+// Generate VCP-compliant JSON payload for ORDER_NEW event
+vcpOrderNewPayload(orderId, side, orderType, qty, price, slPrice, tpPrice) =>
+    str.format(
+        '{{' +
+        '"vcp_version":"1.1",' +
+        '"event_id":"{0}",' +
+        '"timestamp":"{1}",' +
+        '"event_type":"ORDER_NEW",' +
+        '"tier":"SILVER",' +
+        '"policy_id":"urn:vso:policy:tv-retail:v1",' +
+        '"clock_sync":"BEST_EFFORT",' +
+        '"system_id":"{2}",' +
+        '"account_id":"{3}",' +
+        '"payload":{{' +
+            '"order_id":"{4}",' +
+            '"symbol":"{5}",' +
+            '"side":"{6}",' +
+            '"order_type":"{7}",' +
+            '"quantity":{8},' +
+            '"price":{9},' +
+            '"stop_loss":{10},' +
+            '"take_profit":{11},' +
+            '"algo_id":"MACD_CROSSOVER_V1",' +
+            '"decision_params":{{' +
+                '"macd_line":{12},' +
+                '"signal_line":{13},' +
+                '"histogram":{14}' +
+            '}}' +
+        '}}' +
+        '}}',
+        vcpEventId(),
+        vcpTimestamp(),
+        vcpSystemId,
+        vcpAccountId,
+        orderId,
+        syminfo.tickerid,
+        side,
+        orderType,
+        qty,
+        price,
+        slPrice,
+        tpPrice,
+        macdLine,
+        signalLine,
+        histLine)
+
+// Generate VCP-compliant JSON payload for ORDER_FILLED event
+vcpOrderFilledPayload(orderId, side, fillQty, fillPrice) =>
+    str.format(
+        '{{' +
+        '"vcp_version":"1.1",' +
+        '"event_id":"{0}",' +
+        '"timestamp":"{1}",' +
+        '"event_type":"ORDER_FILLED",' +
+        '"tier":"SILVER",' +
+        '"policy_id":"urn:vso:policy:tv-retail:v1",' +
+        '"clock_sync":"BEST_EFFORT",' +
+        '"system_id":"{2}",' +
+        '"account_id":"{3}",' +
+        '"payload":{{' +
+            '"order_id":"{4}",' +
+            '"symbol":"{5}",' +
+            '"side":"{6}",' +
+            '"fill_quantity":{7},' +
+            '"fill_price":{8},' +
+            '"commission":0.001,' +
+            '"realized_pnl":0' +
+        '}}' +
+        '}}',
+        vcpEventId(),
+        vcpTimestamp(),
+        vcpSystemId,
+        vcpAccountId,
+        orderId,
+        syminfo.tickerid,
+        side,
+        fillQty,
+        fillPrice)
+
+// Generate VCP-compliant JSON payload for POSITION_CLOSE event
+vcpPositionClosePayload(orderId, side, closeQty, closePrice, pnl) =>
+    str.format(
+        '{{' +
+        '"vcp_version":"1.1",' +
+        '"event_id":"{0}",' +
+        '"timestamp":"{1}",' +
+        '"event_type":"POSITION_CLOSE",' +
+        '"tier":"SILVER",' +
+        '"policy_id":"urn:vso:policy:tv-retail:v1",' +
+        '"clock_sync":"BEST_EFFORT",' +
+        '"system_id":"{2}",' +
+        '"account_id":"{3}",' +
+        '"payload":{{' +
+            '"order_id":"{4}",' +
+            '"symbol":"{5}",' +
+            '"side":"{6}",' +
+            '"close_quantity":{7},' +
+            '"close_price":{8},' +
+            '"realized_pnl":{9},' +
+            '"close_reason":"SIGNAL_EXIT"' +
+        '}}' +
+        '}}',
+        vcpEventId(),
+        vcpTimestamp(),
+        vcpSystemId,
+        vcpAccountId,
+        orderId,
+        syminfo.tickerid,
+        side,
+        closeQty,
+        closePrice,
+        pnl)
+
+// ============================================================================
+// STRATEGY EXECUTION WITH VCP LOGGING
+// ============================================================================
+
+// Track position state
+var float entryPrice = na
+var string currentOrderId = na
+
+// Calculate position sizes
+positionSize = strategy.equity * 0.95 / close
+
+// Long Entry
+if longCondition and strategy.position_size == 0
+    currentOrderId := vcpEventId()
+    slPrice = close * (1 - stopLossPct / 100)
+    tpPrice = close * (1 + takeProfitPct / 100)
+    
+    strategy.entry("Long", strategy.long, qty=positionSize)
+    strategy.exit("Long Exit", "Long", stop=slPrice, limit=tpPrice)
+    
+    entryPrice := close
+    
+    // VCP Webhook Alert for ORDER_NEW
+    if vcpEnabled
+        alert(vcpOrderNewPayload(currentOrderId, "BUY", "MARKET", positionSize, close, slPrice, tpPrice), alert.freq_once_per_bar)
+
+// Short Entry
+if shortCondition and strategy.position_size == 0
+    currentOrderId := vcpEventId()
+    slPrice = close * (1 + stopLossPct / 100)
+    tpPrice = close * (1 - takeProfitPct / 100)
+    
+    strategy.entry("Short", strategy.short, qty=positionSize)
+    strategy.exit("Short Exit", "Short", stop=slPrice, limit=tpPrice)
+    
+    entryPrice := close
+    
+    // VCP Webhook Alert for ORDER_NEW
+    if vcpEnabled
+        alert(vcpOrderNewPayload(currentOrderId, "SELL", "MARKET", positionSize, close, slPrice, tpPrice), alert.freq_once_per_bar)
+
+// Long Exit
+if longExit and strategy.position_size > 0
+    pnl = (close - entryPrice) * strategy.position_size
+    
+    // VCP Webhook Alert for POSITION_CLOSE
+    if vcpEnabled
+        alert(vcpPositionClosePayload(currentOrderId, "SELL", strategy.position_size, close, pnl), alert.freq_once_per_bar)
+    
+    strategy.close("Long")
+    entryPrice := na
+
+// Short Exit
+if shortExit and strategy.position_size < 0
+    pnl = (entryPrice - close) * math.abs(strategy.position_size)
+    
+    // VCP Webhook Alert for POSITION_CLOSE
+    if vcpEnabled
+        alert(vcpPositionClosePayload(currentOrderId, "BUY", math.abs(strategy.position_size), close, pnl), alert.freq_once_per_bar)
+    
+    strategy.close("Short")
+    entryPrice := na
+
+// ============================================================================
+// VISUAL INDICATORS
+// ============================================================================
+
+// Plot MACD
+plot(macdLine, "MACD", color=color.blue, display=display.pane)
+plot(signalLine, "Signal", color=color.orange, display=display.pane)
+plot(histLine, "Histogram", color=histLine >= 0 ? color.green : color.red, style=plot.style_histogram, display=display.pane)
+
+// Plot entry/exit signals
+plotshape(longCondition and strategy.position_size == 0, "Long Entry", shape.triangleup, location.belowbar, color.green, size=size.small)
+plotshape(shortCondition and strategy.position_size == 0, "Short Entry", shape.triangledown, location.abovebar, color.red, size=size.small)
+
+// VCP Status indicator
+bgcolor(vcpEnabled ? color.new(color.blue, 95) : na, title="VCP Active")
+
+// ============================================================================
+// INFO TABLE
+// ============================================================================
+
+var table infoTable = table.new(position.top_right, 2, 6, bgcolor=color.new(color.black, 80))
+
+if barstate.islast
+    table.cell(infoTable, 0, 0, "VCP Status", text_color=color.white, text_size=size.small)
+    table.cell(infoTable, 1, 0, vcpEnabled ? "✓ Active" : "✗ Disabled", text_color=vcpEnabled ? color.green : color.red, text_size=size.small)
+    
+    table.cell(infoTable, 0, 1, "Tier", text_color=color.white, text_size=size.small)
+    table.cell(infoTable, 1, 1, "SILVER", text_color=color.silver, text_size=size.small)
+    
+    table.cell(infoTable, 0, 2, "VCP Version", text_color=color.white, text_size=size.small)
+    table.cell(infoTable, 1, 2, "1.1", text_color=color.white, text_size=size.small)
+    
+    table.cell(infoTable, 0, 3, "System ID", text_color=color.white, text_size=size.small)
+    table.cell(infoTable, 1, 3, vcpSystemId, text_color=color.white, text_size=size.small)
+    
+    table.cell(infoTable, 0, 4, "Position", text_color=color.white, text_size=size.small)
+    table.cell(infoTable, 1, 4, str.tostring(strategy.position_size, "#.##"), text_color=strategy.position_size > 0 ? color.green : strategy.position_size < 0 ? color.red : color.white, text_size=size.small)
+    
+    table.cell(infoTable, 0, 5, "P&L", text_color=color.white, text_size=size.small)
+    table.cell(infoTable, 1, 5, str.tostring(strategy.netprofit, "#.##"), text_color=strategy.netprofit >= 0 ? color.green : color.red, text_size=size.small)
+
+// ============================================================================
+// END OF STRATEGY
+// ============================================================================

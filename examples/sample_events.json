@@ -1,0 +1,99 @@
+{
+  "description": "Sample VCP v1.1 Events for TradingView Integration",
+  "vcp_version": "1.1",
+  "tier": "SILVER",
+  "events": [
+    {
+      "vcp_version": "1.1",
+      "event_id": "2025-0115-7103-0000-a1b2c3d4e5f",
+      "timestamp": "2025-01-15T10:30:00.123Z",
+      "event_type": "ORDER_NEW",
+      "tier": "SILVER",
+      "policy_id": "urn:vso:policy:tv-retail:v1",
+      "clock_sync": "BEST_EFFORT",
+      "system_id": "TV-STRATEGY-001",
+      "account_id": "DEMO-ACCOUNT",
+      "payload": {
+        "order_id": "ORD-20250115-001",
+        "symbol": "BTCUSD",
+        "side": "BUY",
+        "order_type": "MARKET",
+        "quantity": 0.1,
+        "price": 52000.00,
+        "stop_loss": 50960.00,
+        "take_profit": 54080.00,
+        "algo_id": "MACD_CROSSOVER_V1",
+        "decision_params": {
+          "macd_line": -150.25,
+          "signal_line": -175.50,
+          "histogram": 25.25
+        }
+      }
+    },
+    {
+      "vcp_version": "1.1",
+      "event_id": "2025-0115-7103-0001-b2c3d4e5f6g",
+      "timestamp": "2025-01-15T10:30:00.456Z",
+      "event_type": "ORDER_FILLED",
+      "tier": "SILVER",
+      "policy_id": "urn:vso:policy:tv-retail:v1",
+      "clock_sync": "BEST_EFFORT",
+      "system_id": "TV-STRATEGY-001",
+      "account_id": "DEMO-ACCOUNT",
+      "payload": {
+        "order_id": "ORD-20250115-001",
+        "symbol": "BTCUSD",
+        "side": "BUY",
+        "fill_quantity": 0.1,
+        "fill_price": 52005.50,
+        "commission": 0.001,
+        "realized_pnl": 0
+      }
+    },
+    {
+      "vcp_version": "1.1",
+      "event_id": "2025-0115-7115-0000-c3d4e5f6g7h",
+      "timestamp": "2025-01-15T11:45:00.789Z",
+      "event_type": "POSITION_CLOSE",
+      "tier": "SILVER",
+      "policy_id": "urn:vso:policy:tv-retail:v1",
+      "clock_sync": "BEST_EFFORT",
+      "system_id": "TV-STRATEGY-001",
+      "account_id": "DEMO-ACCOUNT",
+      "payload": {
+        "order_id": "ORD-20250115-002",
+        "symbol": "BTCUSD",
+        "side": "SELL",
+        "close_quantity": 0.1,
+        "close_price": 53250.00,
+        "realized_pnl": 124.45,
+        "close_reason": "SIGNAL_EXIT"
+      }
+    },
+    {
+      "vcp_version": "1.1",
+      "event_id": "2025-0115-7120-0000-d4e5f6g7h8i",
+      "timestamp": "2025-01-15T12:00:00.000Z",
+      "event_type": "ALGO_PARAMETER_CHANGE",
+      "tier": "SILVER",
+      "policy_id": "urn:vso:policy:tv-retail:v1",
+      "clock_sync": "BEST_EFFORT",
+      "system_id": "TV-STRATEGY-001",
+      "account_id": "DEMO-ACCOUNT",
+      "payload": {
+        "algo_id": "MACD_CROSSOVER_V1",
+        "parameter_name": "stop_loss_pct",
+        "old_value": 2.0,
+        "new_value": 2.5,
+        "change_reason": "INCREASED_VOLATILITY"
+      }
+    }
+  ],
+  "notes": {
+    "event_id_format": "UUID v7-like: timestamp-based with random suffix",
+    "timestamp_format": "ISO 8601 with milliseconds (UTC)",
+    "policy_id_format": "URN format: urn:vso:policy:<domain>:<version>",
+    "decision_params": "Algorithm-specific parameters that led to the decision",
+    "close_reason": "One of: SIGNAL_EXIT, STOP_LOSS, TAKE_PROFIT, MANUAL, SYSTEM_SHUTDOWN"
+  }
+}
